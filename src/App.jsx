@@ -48,8 +48,8 @@ const App = () => {
       
       // 2. 실패시 또는 로컬(file://)인 경우 예비 경로 확인
       if (!response.ok) {
-        // 실제 운영 환경의 URL로 변경 필요
-        const fallbackUrl = 'https://raw.githubusercontent.com/username/project/main/version.json';
+        // 실제 운영 환경의 GitHub 주소로 연결
+        const fallbackUrl = 'https://raw.githubusercontent.com/adelacanija229-source/adela-designer/main/version.json';
         response = await fetch(fallbackUrl);
       }
 

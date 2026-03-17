@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "postbuild": "node -e \"const fs=require('fs'); const v=require('./version.json').version; fs.renameSync('./dist/index.html', './dist/Adela_Designer_' + v + '.html'); console.log('Build renamed to Adela_Designer_' + v + '.html')\"",
+    "postbuild": "node -e \"const fs=require('fs'); const v=require('./version.json').version; fs.copyFileSync('./dist/index.html', './dist/Adela_Designer_' + v + '.html'); console.log('Build copied to Adela_Designer_' + v + '.html')\"",
     "lint": "eslint .",
     "preview": "vite preview"
   },
