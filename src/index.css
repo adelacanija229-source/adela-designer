@@ -1,0 +1,585 @@
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  /* Soft Warm Palette */
+  --bg-base: #F7F3F0;
+  --accent-deep: #292524;
+  --accent-soft: #D9C5B2;
+  --accent-light: #E9DED3;
+  --surface: #FFFFFF;
+  --text-main: #1C1917;
+  --text-muted: #57534E;
+  --border-color: #EDE9E6;
+  --primary-red: #C9001A;
+
+  /* Modern Geometry */
+  --radius-max: 32px;
+  --radius-lg: 24px;
+  --radius-md: 16px;
+  --radius-sm: 10px;
+
+  /* Soft Elevation */
+  --shadow-soft: 0 12px 32px rgba(125, 110, 102, 0.06);
+  --shadow-lg: 0 20px 48px rgba(125, 110, 102, 0.12);
+  --glass-bg: rgba(255, 255, 255, 0.75);
+  --transition-main: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  /* Premium Status Variables (Muted Tones) */
+  --status-success: #6B8E6B;
+  /* Muted Sage Green */
+  --status-success-bg: rgba(107, 142, 107, 0.15);
+  --status-warning: #B87C4C;
+  /* Muted Terracotta */
+  --status-warning-bg: rgba(184, 124, 76, 0.15);
+  --status-danger: #A35050;
+  /* Muted Brick Red */
+  --status-danger-bg: rgba(163, 80, 80, 0.15);
+  --status-info: #5B7A8C;
+  /* Muted Steel Blue */
+  --status-info-bg: rgba(91, 122, 140, 0.15);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Pretendard', sans-serif;
+}
+
+h1,
+h2,
+h3,
+.sidebar-logo {
+  font-family: 'Outfit', 'Pretendard', sans-serif;
+}
+
+body {
+  background-color: var(--bg-base);
+  color: var(--text-main);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+  /* App container handles scrolling */
+}
+
+/* App Container - Desktop Wallpaper Style */
+.app-container {
+  display: flex;
+  height: 100vh;
+  padding: 30px;
+  /* Viewport margin */
+  gap: 20px;
+  background-color: var(--bg-base);
+  background-size: 100% 100%;
+  /* Stretches the image to fill the screen entirely so everything is visible */
+  background-position: center;
+  background-repeat: no-repeat;
+  transition: background-image 0.5s ease-in-out;
+  color: var(--text-primary);
+  font-family: 'Pretendard', -apple-system, sans-serif;
+  overflow: hidden;
+  max-width: 1920px;
+  /* Optional: limit max width on ultra-wide screens */
+  margin: 0 auto;
+}
+
+/* Sidebar - Premium Espresso Glassmorphism */
+.sidebar {
+  width: 280px;
+  background-color: rgba(38, 26, 22, 0.45);
+  /* Balanced rich brown with higher transparency */
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 30px;
+  /* Enhanced rounding */
+  display: flex;
+  flex-direction: column;
+  padding: 32px 12px;
+  z-index: 10;
+  box-shadow: 10px 10px 40px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  transition: var(--transition-main);
+  height: 90vh;
+  /* Don't fill 100% */
+  max-height: 950px;
+}
+
+.sidebar-header {
+  padding: 0 20px 40px;
+}
+
+.logo-container {
+  text-align: left;
+  padding-left: 10px;
+}
+
+.sidebar-logo {
+  font-size: 28px;
+  font-weight: 600;
+  color: #FFFFFF;
+  letter-spacing: 6px;
+  line-height: 1;
+  text-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+  margin-bottom: 4px;
+}
+
+.logo-sub {
+  font-weight: 500;
+  color: #A09590;
+  font-size: 11px;
+  margin-top: 4px;
+  letter-spacing: 2px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-menu {
+  flex: 1;
+  padding: 0 8px;
+  overflow-y: auto;
+}
+
+.sidebar-menu::-webkit-scrollbar {
+  width: 4px;
+}
+.sidebar-menu::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sidebar-menu::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  color: #B2A7A2;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: var(--transition-main);
+  border-radius: 14px;
+  margin-bottom: 4px;
+  position: relative;
+}
+
+.nav-icon-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  opacity: 0.7;
+}
+
+.nav-item:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #FFFFFF;
+}
+
+.nav-item:hover .nav-icon-box {
+  opacity: 1;
+}
+
+.nav-item.active {
+  background-color: var(--accent-deep);
+  /* Use the taupe accent for active highlight */
+  color: #FFFFFF;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.nav-item.active .nav-icon-box {
+  opacity: 1;
+  color: white;
+}
+
+.sidebar-footer {
+  padding: 24px 20px 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  margin-top: 20px;
+}
+
+.footer-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: #8E8581;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.status-dot.green {
+  background: #10b981;
+}
+
+.bg-upload-btn {
+  background: none;
+  border: none;
+  color: #8E8581;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.bg-upload-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #FFFFFF;
+}
+
+/* Main Content Area - Light Glassmorphism */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: rgba(255, 255, 255, 0.2);
+  /* Ultra-high transparency for max glass effect */
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border-radius: 40px;
+  /* More rounded like a modern window */
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  overflow: hidden;
+  height: 90vh;
+  /* Don't fill 100% */
+  max-height: 950px;
+  position: relative;
+}
+
+/* Topbar Context */
+.topbar {
+  height: 80px;
+  background-color: var(--surface);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  padding: 0 40px;
+  justify-content: space-between;
+}
+
+.active-project-badge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-base);
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  transition: var(--transition-main);
+}
+
+.active-project-badge .name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--accent-deep);
+}
+
+.content-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 32px 40px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent-soft) transparent;
+}
+
+.content-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.content-scroll::-webkit-scrollbar-thumb {
+  background-color: var(--accent-soft);
+  border-radius: 10px;
+}
+
+.page-header {
+  margin-bottom: 40px;
+}
+
+.page-title {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--accent-deep);
+  letter-spacing: -0.8px;
+  margin-bottom: 8px;
+}
+
+/* Utility Classes for Glass Box Effects inside main content */
+.glass-card {
+  background: rgba(255, 255, 255, 0.8);
+  /* Solid enough to read text against the transparent container */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 20px;
+  box-shadow: var(--shadow-sm);
+  padding: 24px;
+  margin-bottom: 24px;
+  transition: var(--transition-main);
+}
+
+.glass-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-4px);
+}
+
+/* Buttons - Rounded & Premium */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 24px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-main);
+  border: none;
+}
+
+.btn-primary {
+  background-color: var(--accent-deep);
+  color: white;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(125, 110, 102, 0.25);
+  filter: brightness(1.1);
+}
+
+.btn-outline {
+  background-color: transparent;
+  color: var(--accent-deep);
+  border: 2px solid var(--accent-deep);
+}
+
+.btn-outline:hover {
+  background-color: var(--bg-base);
+}
+
+/* Forms - Soft Warm Style */
+.form-input,
+.form-textarea {
+  padding: 12px 18px;
+  border: 1.5px solid rgba(125, 110, 102, 0.15);
+  border-radius: 30px;
+  /* Pill shape for rhythm against glass */
+  font-size: 15px;
+  transition: var(--transition-main);
+  background-color: rgba(255, 255, 255, 0.9);
+  color: var(--text-main);
+}
+
+.form-textarea {
+  border-radius: 20px;
+  /* Slightly less rounded for large text areas */
+}
+
+.form-input:focus,
+.form-textarea:focus {
+  outline: none;
+  border-color: var(--accent-deep);
+  background-color: #FFFFFF;
+  box-shadow: 0 0 0 4px var(--accent-light);
+}
+
+.borderless-input {
+  padding: 8px 0;
+  border: none;
+  border-bottom: 1.5px solid transparent;
+  border-radius: 0;
+  font-size: 14px;
+  background-color: transparent;
+  color: var(--text-main);
+  transition: border-color var(--transition-fast), padding var(--transition-fast);
+  width: 100%;
+}
+
+.borderless-input:focus {
+  outline: none;
+  border-bottom-color: var(--accent-deep);
+}
+
+.borderless-input::placeholder {
+  color: #A8A29E;
+  font-weight: 500;
+}
+
+/* Tables - Minimalist */
+.data-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.data-table th {
+  padding: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent-deep);
+  border-bottom: 2px solid var(--border-color);
+  background: var(--bg-base);
+}
+
+.data-table td {
+  padding: 20px;
+  border-bottom: 1px solid var(--border-color);
+  transition: var(--transition-main);
+}
+
+/* Adela Custom Table for Price Library */
+.adela-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.adela-table th {
+  padding: 12px 16px;
+  background: #fcfcfc;
+  color: var(--text-muted);
+  font-weight: 600;
+  text-align: left;
+  border-bottom: 2px solid var(--border-color);
+  white-space: nowrap;
+}
+
+.adela-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-main);
+  vertical-align: middle;
+}
+
+.adela-table tr:hover td {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.adela-table .col-category { width: 80px; }
+.adela-table .col-name { min-width: 200px; font-weight: 600; }
+.adela-table .col-spec { min-width: 150px; color: var(--text-muted); }
+.adela-table .col-unit { width: 60px; text-align: center; }
+.adela-table .col-price { width: 110px; text-align: right; font-variant-numeric: tabular-nums; }
+.adela-table .col-company { width: 120px; }
+.adela-table .col-date { width: 100px; color: var(--text-muted); font-size: 12px; }
+.adela-table .col-note { min-width: 200px; color: var(--text-muted); font-size: 13px; }
+
+.category-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  background: var(--accent-light);
+  color: var(--accent-deep);
+  white-space: nowrap;
+}
+
+.data-table tr:hover td {
+  background-color: var(--bg-base);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-content-wrapper {
+  animation: fadeIn 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Specific Print Optimizations */
+@media print {
+  @page {
+    size: A4;
+    margin: 15mm;
+  }
+
+  html,
+  body,
+  .app-container {
+    padding: 0;
+    display: block !important;
+    background-image: none !important;
+    background-color: white !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  .sidebar,
+  .topbar,
+  .no-print {
+    display: none !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+
+  .main-content {
+    border-radius: 0;
+    box-shadow: none;
+    border: none;
+  }
+
+  .content-scroll {
+    padding: 0;
+    overflow: visible;
+  }
+
+  .glass-card {
+    padding: 0;
+    border: none;
+    box-shadow: none;
+    margin-bottom: 40px;
+  }
+
+  /* 공종별 시방 도면 인쇄 시 크게 출력 */
+  .trade-drawing-wrap {
+    position: relative !important;
+    width: 100% !important;
+    margin-bottom: 12px !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .trade-drawing-img {
+    width: 100% !important;
+    height: auto !important;
+    max-width: 100% !important;
+    min-height: 200px !important;
+    max-height: 400px !important;
+    object-fit: contain !important;
+    border: 1px solid #ccc !important;
+    border-radius: 4px !important;
+    display: block !important;
+    cursor: default !important;
+  }
+
+  /* 도면 첨부 영역 — 인쇄 시 가로 배열 → 세로 1열 */
+  .trade-drawing-wrap + .trade-drawing-wrap {
+    margin-top: 12px !important;
+  }
+}

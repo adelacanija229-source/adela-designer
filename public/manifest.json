@@ -1,0 +1,21 @@
+{
+  "name": "ADELA Designer Workspace",
+  "short_name": "ADELA Decor",
+  "description": "아델라 인테리어 디자이너용 통합 업무 지원 시스템",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "adela-logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "adela-logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
