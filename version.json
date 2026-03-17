@@ -1,5 +1,5 @@
 {
-  "version": "v1.21",
+  "version": "v1.22",
   "url": "https://adelacanija229-source.github.io/adela-designer/",
-  "notes": "v1.21 디자이너 메모 저장 오류 수정 및 시스템 안정성 강화"
+  "notes": "v1.22 런타임 오류(흰색 화면) 긴급 수정 및 안정화"
 }

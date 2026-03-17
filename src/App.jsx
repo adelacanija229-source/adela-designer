@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Briefcase, FileText, Printer } from 'lucide-react';
+import { Briefcase, FileText, Printer, Edit2 } from 'lucide-react';
 import Sidebar from './components/Sidebar';
 import ProjectRegistration from './components/ProjectRegistration';
 import MeetingLogger from './components/MeetingLogger';
@@ -12,7 +12,7 @@ import MaterialLibrary from './components/MaterialLibrary';
 import ConstructionSpecs from './components/ConstructionSpecs';
 import { offlineStore, STORES } from './db/offlineStore';
 
-const APP_VERSION = 'v1.21'; // Current version
+const APP_VERSION = 'v1.22'; // Current version
 
 const App = () => {
   const [activeTab, setActiveTab] = useState('projects');
