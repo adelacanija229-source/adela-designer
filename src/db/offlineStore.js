@@ -73,6 +73,7 @@ export const offlineStore = {
     },
 
     async getByIndex(storeName, indexName, key) {
+        if (key === undefined || key === null) return [];
         const db = await initDB();
         return db.getAllFromIndex(storeName, indexName, key);
     },

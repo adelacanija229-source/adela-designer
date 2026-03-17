@@ -1,5 +1,5 @@
 {
-  "version": "v1.20",
-  "url": "https://github.com/adela-designer/adela-designer-workspace/releases",
-  "notes": "v1.20 PWA 기반 설치형 웹앱 도입 및 원클릭 업데이트 지원"
+  "version": "v1.21",
+  "url": "https://adelacanija229-source.github.io/adela-designer/",
+  "notes": "v1.21 디자이너 메모 저장 오류 수정 및 시스템 안정성 강화"
 }

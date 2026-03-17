@@ -24,12 +24,17 @@ const DesignerMemo = ({ project }) => {
     }, [project?.id, loadMemo]);
 
     const handleSave = async () => {
+        if (!project?.id) {
+            alert("선택된 현장 정보가 없습니다. 현장을 먼저 선택하거나 잠시 후 다시 시도해주세요.");
+            return;
+        }
+
         setIsSaving(true);
         try {
             const memos = await offlineStore.getByIndex(STORES.DESIGNER_MEMOS, 'projectId', project.id);
 
             const memoData = {
-                projectId: project?.id,
+                projectId: project.id,
                 content: memoContent,
                 updatedAt: new Date().toISOString()
             };
@@ -37,7 +42,7 @@ const DesignerMemo = ({ project }) => {
             if (memos && memos.length > 0) {
                 memoData.id = memos[0].id; // Update existing
             } else {
-                memoData.id = Date.now().toString(); // Create new
+                memoData.id = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(); // Create new with UUID if possible
             }
 
             await offlineStore.save(STORES.DESIGNER_MEMOS, memoData);
