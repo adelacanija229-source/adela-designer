@@ -23,6 +23,8 @@ const MaterialLibrary = () => {
     brand: '',
     productCode: '',
     specifications: '',
+    unit: '',
+    unitPrice: 0,
     defaultRemarks: '',
     image: null
   });
@@ -120,6 +122,8 @@ const MaterialLibrary = () => {
       brand: item.brand || '',
       productCode: item.productCode || '',
       specifications: item.specifications || '',
+      unit: item.unit || '',
+      unitPrice: item.unitPrice || 0,
       defaultRemarks: item.defaultRemarks || '',
       image: item.image || null
     });
@@ -130,22 +134,39 @@ const MaterialLibrary = () => {
     setIsModalOpen(false);
     setEditingItem(null);
     setFormData({
-      category: '바닥재', name: '', brand: '', productCode: '', specifications: '', defaultRemarks: '', image: null
+      category: '바닥재', name: '', brand: '', productCode: '', specifications: '', unit: '', unitPrice: 0, defaultRemarks: '', image: null
     });
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  const handleExport = () => {
-    const dataStr = JSON.stringify(materials, null, 2);
+  const handleExport = (data, filename) => {
+    const dataStr = JSON.stringify(data, null, 2);
     const blob = new Blob([dataStr], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `ADELA_Material_Library_${new Date().toISOString().split('T')[0]}.json`;
+    a.download = `${filename}_${new Date().toISOString().split('T')[0]}.json`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+  };
+
+  const handleExportAll = () => {
+    handleExport(materials, 'ADELA_Material_Library_Full');
+  };
+
+  const handleExportItem = (item) => {
+    handleExport([item], `ADELA_Material_${item.name.replace(/\s+/g, '_')}`);
+  };
+
+  const handleExportCategory = () => {
+    const categoryData = materials.filter(m => m.category === activeCategory);
+    if (categoryData.length === 0) {
+      alert('해당 공종에 등록된 자재가 없습니다.');
+      return;
+    }
+    handleExport(categoryData, `ADELA_Material_Category_${activeCategory.replace(/\s+/g, '_')}`);
   };
 
   const handleImport = async (e) => {
@@ -189,8 +210,8 @@ const MaterialLibrary = () => {
             style={{ display: 'none' }} 
             accept=".json" 
           />
-          <button className="btn btn-outline" onClick={handleExport}>
-            <Download size={16} /> 내보내기
+          <button className="btn btn-outline" onClick={handleExportAll}>
+            <Download size={16} /> 전체 내보내기
           </button>
           <button className="btn btn-primary" onClick={() => setIsModalOpen(true)}>
             <Plus size={16} /> 새 마감재 등록
@@ -211,25 +232,35 @@ const MaterialLibrary = () => {
         </div>
         <div className="category-tabs" style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '4px' }}>
           {CATEGORIES.map(cat => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              style={{
-                padding: '6px 12px',
-                borderRadius: '20px',
-                border: '1px solid',
-                borderColor: activeCategory === cat ? '#2563eb' : '#e2e8f0',
-                backgroundColor: activeCategory === cat ? '#eff6ff' : 'white',
-                color: activeCategory === cat ? '#1d4ed8' : '#64748b',
-                whiteSpace: 'nowrap',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-                fontSize: '13px',
-                fontWeight: activeCategory === cat ? '600' : '400'
-              }}
-            >
-              {cat}
-            </button>
+            <div key={cat} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <button
+                onClick={() => setActiveCategory(cat)}
+                style={{
+                  padding: '6px 12px',
+                  borderRadius: '20px',
+                  border: '1px solid',
+                  borderColor: activeCategory === cat ? '#2563eb' : '#e2e8f0',
+                  backgroundColor: activeCategory === cat ? '#eff6ff' : 'white',
+                  color: activeCategory === cat ? '#1d4ed8' : '#64748b',
+                  whiteSpace: 'nowrap',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  fontSize: '13px',
+                  fontWeight: activeCategory === cat ? '600' : '400'
+                }}
+              >
+                {cat}
+              </button>
+              {activeCategory === cat && cat !== '전체' && filteredMaterials.length > 0 && (
+                <button 
+                  onClick={handleExportCategory}
+                  title={`${cat} 공종 내보내기`}
+                  style={{ background: 'none', border: 'none', padding: '4px', cursor: 'pointer', color: '#64748b' }}
+                >
+                  <Download size={14} />
+                </button>
+              )}
+            </div>
           ))}
         </div>
       </div>
@@ -264,6 +295,13 @@ const MaterialLibrary = () => {
                   <Edit2 size={12} color="#475569" />
                 </button>
                 <button 
+                  onClick={() => handleExportItem(item)}
+                  style={{ background: 'white', border: 'none', padding: '4px', borderRadius: '4px', cursor: 'pointer', boxShadow: '0 1px 2px rgba(0,0,0,0.1)' }}
+                  title="개별 내보내기"
+                >
+                  <Download size={12} color="#2563eb" />
+                </button>
+                <button 
                   onClick={() => handleDelete(item.id)}
                   style={{ background: 'white', border: 'none', padding: '4px', borderRadius: '4px', cursor: 'pointer', boxShadow: '0 1px 2px rgba(0,0,0,0.1)' }}
                   title="삭제"
@@ -285,6 +323,12 @@ const MaterialLibrary = () => {
                 
                 <span style={{ color: '#94a3b8' }}>규격:</span>
                 <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.specifications || '-'}</span>
+                
+                <span style={{ color: '#2563eb' }}>단가:</span>
+                <span style={{ fontWeight: '700', color: '#1d4ed8' }}>
+                  {item.unitPrice ? `₩${item.unitPrice.toLocaleString()}` : '-'}
+                  {item.unit ? ` / ${item.unit}` : ''}
+                </span>
               </div>
             </div>
           </div>
@@ -370,16 +414,44 @@ const MaterialLibrary = () => {
                   </div>
                 </div>
 
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                  <div className="form-group">
+                    <label style={{ display: 'block', fontSize: '13px', fontWeight: '500', marginBottom: '6px' }}>규격 (Size/Type)</label>
+                    <input 
+                      type="text" 
+                      name="specifications" 
+                      value={formData.specifications} 
+                      onChange={handleInputChange}
+                      placeholder="예: 115 x 800 x 7.5T"
+                      style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label style={{ display: 'block', fontSize: '13px', fontWeight: '500', marginBottom: '6px' }}>단위 (Unit)</label>
+                    <input 
+                      type="text" 
+                      name="unit" 
+                      value={formData.unit} 
+                      onChange={handleInputChange}
+                      placeholder="예: BOX, m2, 개"
+                      style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
+                    />
+                  </div>
+                </div>
+
                 <div className="form-group">
-                  <label style={{ display: 'block', fontSize: '13px', fontWeight: '500', marginBottom: '6px' }}>규격 (Size/Type)</label>
-                  <input 
-                    type="text" 
-                    name="specifications" 
-                    value={formData.specifications} 
-                    onChange={handleInputChange}
-                    placeholder="예: 115 x 800 x 7.5T"
-                    style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
-                  />
+                  <label style={{ display: 'block', fontSize: '13px', fontWeight: '500', marginBottom: '6px' }}>단가 (Price)</label>
+                  <div style={{ position: 'relative' }}>
+                    <span style={{ position: 'absolute', left: '10px', top: '10px', color: '#64748b' }}>₩</span>
+                    <input 
+                      type="number" 
+                      name="unitPrice" 
+                      value={formData.unitPrice} 
+                      onChange={(e) => setFormData(prev => ({ ...prev, unitPrice: Number(e.target.value) }))}
+                      placeholder="0"
+                      style={{ width: '100%', padding: '10px 10px 10px 25px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
+                    />
+                  </div>
                 </div>
 
                 <div className="form-group">

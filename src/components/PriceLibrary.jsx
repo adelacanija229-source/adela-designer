@@ -85,6 +85,15 @@ export default function PriceLibrary() {
 
                 await tx.done;
 
+                // 성공적으로 동기화된 버전 정보를 저장하여 App.jsx 배너를 사라지게 함
+                if (result.version) {
+                    await offlineStore.save(STORES.SETTINGS, {
+                        id: 'last_price_sync',
+                        version: result.version,
+                        date: result.date || new Date().toISOString()
+                    });
+                }
+
                 showMessage('success', `성공적으로 ${addedCount}개의 단가 데이터를 동기화했습니다!`);
                 loadData(); // Reload UI
             } else {

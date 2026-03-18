@@ -12,7 +12,7 @@ import MaterialLibrary from './components/MaterialLibrary';
 import ConstructionSpecs from './components/ConstructionSpecs';
 import { offlineStore, STORES } from './db/offlineStore';
 
-const APP_VERSION = 'v1.22'; // Current version
+const APP_VERSION = 'v1.23'; // Current version
 
 const App = () => {
   const [activeTab, setActiveTab] = useState('projects');
@@ -24,6 +24,7 @@ const App = () => {
   const [backgroundImage, setBackgroundImage] = useState(null);
   const [newVersionInfo, setNewVersionInfo] = useState(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [priceUpdateInfo, setPriceUpdateInfo] = useState(null);
 
   const loadProjects = useCallback(async () => {
     const list = await offlineStore.getAll(STORES.PROJECTS);
@@ -64,6 +65,30 @@ const App = () => {
     }
   }, []);
 
+  const checkPriceUpdate = useCallback(async () => {
+    try {
+      const config = await offlineStore.getById(STORES.SETTINGS, 'libraryConfig');
+      if (!config || !config.url) return;
+
+      // 구글 시트 데이터 로드 (첫 몇 줄만 읽어도 되지만 fetch API 제약상 전체 로드)
+      const response = await fetch(config.url);
+      if (!response.ok) return;
+
+      const result = await response.json();
+      if (result.status === 'success' && result.version) {
+        const lastSync = await offlineStore.getById(STORES.SETTINGS, 'last_price_sync');
+        if (!lastSync || lastSync.version !== result.version) {
+          setPriceUpdateInfo({
+            version: result.version,
+            date: result.date || new Date().toLocaleDateString()
+          });
+        }
+      }
+    } catch {
+      console.log('Price update check failed');
+    }
+  }, []);
+
   const loadGlobalMemo = useCallback(async () => {
     if (!activeProjectId) return;
     try {
@@ -98,6 +123,7 @@ const App = () => {
     loadProjects();
     loadBackgroundImage();
     checkVersion();
+    checkPriceUpdate();
 
     // Register Service Worker for PWA
     if ('serviceWorker' in navigator) {
@@ -300,6 +326,53 @@ const App = () => {
               <button 
                 onClick={() => setNewVersionInfo(null)} 
                 style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: '4px' }}
+              >
+                ✕
+              </button>
+            </div>
+          )}
+
+          {priceUpdateInfo && (
+            <div style={{
+              background: 'linear-gradient(90deg, #1d4ed8, #2563eb)',
+              color: 'white',
+              padding: '10px 24px',
+              fontSize: '13px',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: '16px',
+              zIndex: 999,
+              boxShadow: '0 4px 12px rgba(37, 99, 235, 0.2)',
+              borderBottom: '1px solid rgba(255,255,255,0.1)'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '18px' }}>💰</span>
+                <span style={{ fontWeight: '600' }}>아델라 통합 단가표가 업데이트되었습니다! ({priceUpdateInfo.version})</span>
+              </div>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <button 
+                  onClick={() => {
+                    setActiveTab('library');
+                    setPriceUpdateInfo(null);
+                  }}
+                  style={{ 
+                    background: 'white', 
+                    color: '#2563eb', 
+                    border: 'none', 
+                    padding: '4px 14px', 
+                    borderRadius: '6px', 
+                    fontWeight: 'bold',
+                    cursor: 'pointer',
+                    fontSize: '12px'
+                  }}
+                >
+                  지금 확인 및 동기화
+                </button>
+              </div>
+              <button 
+                onClick={() => setPriceUpdateInfo(null)} 
+                style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.7)', cursor: 'pointer', padding: '4px' }}
               >
                 ✕
               </button>

@@ -1,5 +1,5 @@
 {
-  "version": "v1.22",
+  "version": "v1.23",
   "url": "https://adelacanija229-source.github.io/adela-designer/",
-  "notes": "v1.22 런타임 오류(흰색 화면) 긴급 수정 및 안정화"
+  "notes": "v1.23 자산 보호형 자재 내보내기(개별/공종별) 및 단가/단위 항목 추가, 스마트 단가표 동기화 알림 배너 시스템 적용"
 }
