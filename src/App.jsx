@@ -12,7 +12,7 @@ import MaterialLibrary from './components/MaterialLibrary';
 import ConstructionSpecs from './components/ConstructionSpecs';
 import { offlineStore, STORES } from './db/offlineStore';
 
-const APP_VERSION = 'v1.23'; // Current version
+const APP_VERSION = 'v1.26'; // Current version
 
 const App = () => {
   const [activeTab, setActiveTab] = useState('projects');
