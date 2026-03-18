@@ -3,7 +3,7 @@ import { Briefcase, FileText, Calculator, Printer, ShoppingBag, Book, Image, Upl
 import { ADELA_LOGO_B64 } from '../assets/logo';
 import { STORES, offlineStore } from '../db/offlineStore';
 
-const Sidebar = ({ activeTab, setActiveTab, onBackgroundUpload }) => {
+const Sidebar = ({ activeTab, setActiveTab, onBackgroundUpload, hasPriceUpdate }) => {
     const fileInputRef = useRef(null);
     const logoInputRef = useRef(null);
     const [customLogo, setCustomLogo] = useState(null);
@@ -140,6 +140,17 @@ const Sidebar = ({ activeTab, setActiveTab, onBackgroundUpload }) => {
                                     {menu.icon}
                                 </div>
                                 <span className="nav-label">{menu.label}</span>
+                                {menu.id === 'library' && hasPriceUpdate && (
+                                    <div style={{
+                                        width: '8px', 
+                                        height: '8px', 
+                                        marginLeft: 'auto', 
+                                        marginRight: '8px',
+                                        backgroundColor: '#ef4444', 
+                                        borderRadius: '50%',
+                                        boxShadow: '0 0 8px rgba(239, 68, 68, 0.6)'
+                                    }} />
+                                )}
                                 {activeTab === menu.id && <div className="active-glow" />}
                             </div>
                         ))}

@@ -75,11 +75,14 @@ const App = () => {
       if (!response.ok) return;
 
       const result = await response.json();
-      if (result.status === 'success' && result.version) {
+      if (result.status === 'success' && result.data) {
+        const currentVersion = result.version || `v-auto-${JSON.stringify(result.data).length}`;
         const lastSync = await offlineStore.getById(STORES.SETTINGS, 'last_price_sync');
-        if (!lastSync || lastSync.version !== result.version) {
+        
+        if (!lastSync || lastSync.version !== currentVersion) {
           setPriceUpdateInfo({
-            version: result.version,
+            version: result.version ? result.version : '신규 업데이트',
+            rawVersion: currentVersion,
             date: result.date || new Date().toLocaleDateString()
           });
         }
@@ -276,6 +279,7 @@ const App = () => {
           activeTab={activeTab}
           setActiveTab={(tab) => handleNavigation(() => setActiveTab(tab))}
           onBackgroundUpload={handleBackgroundUpload}
+          hasPriceUpdate={!!priceUpdateInfo}
         />
         <div className="main-content">
           {newVersionInfo && (
