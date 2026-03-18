@@ -510,6 +510,132 @@ body {
   animation: fadeIn 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
+/* Responsive - Mobile (under 768px) */
+@media screen and (max-width: 768px) {
+  .app-container {
+    padding: 0;
+    gap: 0;
+    flex-direction: column;
+    height: 100vh;
+    border-radius: 0;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: -280px; /* Hidden by default */
+    height: 100vh;
+    max-height: none;
+    border-radius: 0 30px 30px 0;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 20px 0 50px rgba(0,0,0,0.3);
+    z-index: 1001;
+  }
+
+  .sidebar.open {
+    transform: translateX(280px);
+  }
+
+  .main-content {
+    border-radius: 0;
+    height: 100vh;
+    max-height: none;
+    border: none;
+    box-shadow: none;
+  }
+
+  .topbar {
+    padding: 0 16px;
+    height: 60px;
+  }
+
+  .active-project-badge {
+    padding: 6px 12px;
+  }
+
+  .active-project-badge .name {
+    font-size: 14px;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .content-scroll {
+    padding: 16px;
+    padding-bottom: 80px; /* Space for bottom nav */
+  }
+
+  .page-title {
+    font-size: 24px;
+  }
+
+  .mobile-nav {
+    display: flex !important;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 64px;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid var(--border-color);
+    z-index: 1000;
+    justify-content: space-around;
+    align-items: center;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .mobile-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    color: var(--text-muted);
+    font-size: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .mobile-nav-item.active {
+    color: var(--accent-deep);
+  }
+
+  .mobile-nav-icon {
+    padding: 8px;
+    border-radius: 12px;
+    transition: all 0.2s;
+  }
+
+  .mobile-nav-item.active .mobile-nav-icon {
+    background: var(--accent-light);
+    color: var(--accent-deep);
+  }
+
+  #mobile-menu-trigger,
+  #sidebar-close-btn {
+    display: block !important;
+  }
+
+  /* Overlay when sidebar is open */
+  .sidebar-overlay {
+    display: block !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+  }
+  .hide-on-mobile {
+    display: none !important;
+  }
+}
+
+
 /* Specific Print Optimizations */
 @media print {
   @page {

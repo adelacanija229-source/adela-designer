@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Briefcase, FileText, Printer, Edit2 } from 'lucide-react';
+import { Briefcase, FileText, Printer, Edit2, Menu, X, Calculator, ShoppingBag, Layers } from 'lucide-react';
 import Sidebar from './components/Sidebar';
 import ProjectRegistration from './components/ProjectRegistration';
 import MeetingLogger from './components/MeetingLogger';
@@ -25,6 +25,7 @@ const App = () => {
   const [newVersionInfo, setNewVersionInfo] = useState(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [priceUpdateInfo, setPriceUpdateInfo] = useState(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const loadProjects = useCallback(async () => {
     const list = await offlineStore.getAll(STORES.PROJECTS);
@@ -277,10 +278,18 @@ const App = () => {
       <div className="no-print" style={{ display: 'contents' }}>
         <Sidebar
           activeTab={activeTab}
-          setActiveTab={(tab) => handleNavigation(() => setActiveTab(tab))}
+          setActiveTab={(tab) => {
+            handleNavigation(() => setActiveTab(tab));
+            setIsMobileMenuOpen(false); // Close sidebar on mobile after selection
+          }}
           onBackgroundUpload={handleBackgroundUpload}
           hasPriceUpdate={!!priceUpdateInfo}
+          isOpen={isMobileMenuOpen}
+          onClose={() => setIsMobileMenuOpen(false)}
         />
+        {isMobileMenuOpen && (
+          <div className="sidebar-overlay" onClick={() => setIsMobileMenuOpen(false)} style={{ display: 'none' }} />
+        )}
         <div className="main-content">
           {newVersionInfo && (
             <div style={{
@@ -383,15 +392,34 @@ const App = () => {
             </div>
           )}
           <header className="topbar">
-            <div className="active-project-badge">
-              <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', marginRight: '8px', letterSpacing: '0.5px' }}>PROJECT CONTEXT</span>
-              <span className="name">{currentProjectName}</span>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <button 
+                className="no-print"
+                onClick={() => setIsMobileMenuOpen(true)}
+                style={{ 
+                  display: 'none', /* CSS Media Query handles showing this */
+                  background: 'none', 
+                  border: 'none', 
+                  padding: '8px', 
+                  cursor: 'pointer',
+                  color: 'var(--accent-deep)',
+                  marginRight: '8px'
+                }}
+                id="mobile-menu-trigger"
+              >
+                <Menu size={24} />
+              </button>
+              <div className="active-project-badge">
+                <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', marginRight: '8px', letterSpacing: '0.5px' }} className="hide-on-mobile">PROJECT CONTEXT</span>
+                <span className="name">{currentProjectName}</span>
+              </div>
             </div>
             {activeProjectId && (
               <button
-                className={`btn ${isMemoOpen ? 'btn-primary' : 'btn-outline'}`}
+                className={`btn ${isMemoOpen ? 'btn-primary' : 'btn-outline'} hide-on-mobile`}
                 onClick={() => setIsMemoOpen(!isMemoOpen)}
                 style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 24px', fontSize: '14px', borderRadius: '14px' }}
+                id="desktop-memo-btn"
               >
                 <FileText size={16} />
                 {isMemoOpen ? 'Close Memo' : 'Designer Directives'}
@@ -487,6 +515,38 @@ const App = () => {
 
           <div className="content-scroll page-content-wrapper">
             {renderContent()}
+          </div>
+
+          {/* Mobile Bottom Navigation */}
+          <div className="mobile-nav no-print" style={{ display: 'none' }}>
+            <div 
+              className={`mobile-nav-item ${activeTab === 'projects' ? 'active' : ''}`}
+              onClick={() => setActiveTab('projects')}
+            >
+              <div className="mobile-nav-icon"><Briefcase size={20} /></div>
+              <span>현장정보</span>
+            </div>
+            <div 
+              className={`mobile-nav-item ${activeTab === 'meetings' ? 'active' : ''}`}
+              onClick={() => setActiveTab('meetings')}
+            >
+              <div className="mobile-nav-icon"><FileText size={20} /></div>
+              <span>회의록</span>
+            </div>
+            <div 
+              className={`mobile-nav-item ${activeTab === 'estimates' ? 'active' : ''}`}
+              onClick={() => setActiveTab('estimates')}
+            >
+              <div className="mobile-nav-icon"><Calculator size={20} /></div>
+              <span>견적관리</span>
+            </div>
+            <div 
+              className={`mobile-nav-item ${activeTab === 'materials' ? 'active' : ''}`}
+              onClick={() => setActiveTab('materials')}
+            >
+              <div className="mobile-nav-icon"><Layers size={20} /></div>
+              <span>자재샘플</span>
+            </div>
           </div>
         </div>
       </div>

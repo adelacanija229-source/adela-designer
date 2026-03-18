@@ -1,9 +1,9 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
-import { Briefcase, FileText, Calculator, Printer, ShoppingBag, Book, Image, Upload, Layers, ClipboardList } from 'lucide-react';
+import { Briefcase, FileText, Calculator, Printer, ShoppingBag, Book, Image, Upload, Layers, ClipboardList, X } from 'lucide-react';
 import { ADELA_LOGO_B64 } from '../assets/logo';
 import { STORES, offlineStore } from '../db/offlineStore';
 
-const Sidebar = ({ activeTab, setActiveTab, onBackgroundUpload, hasPriceUpdate }) => {
+const Sidebar = ({ activeTab, setActiveTab, onBackgroundUpload, hasPriceUpdate, isOpen, onClose }) => {
     const fileInputRef = useRef(null);
     const logoInputRef = useRef(null);
     const [customLogo, setCustomLogo] = useState(null);
@@ -95,12 +95,35 @@ const Sidebar = ({ activeTab, setActiveTab, onBackgroundUpload, hasPriceUpdate }
     };
 
     return (
-        <nav className="sidebar">
+        <nav className={`sidebar ${isOpen ? 'open' : ''}`}>
+            {/* Mobile close button */}
+            <button 
+                className="no-print"
+                onClick={onClose}
+                style={{
+                    display: 'none', /* Shown only via media query effectively, or just handle via float */
+                    position: 'absolute',
+                    top: '16px',
+                    right: '16px',
+                    background: 'none',
+                    border: 'none',
+                    color: 'rgba(255,255,255,0.7)',
+                    cursor: 'pointer',
+                    zIndex: 20
+                }}
+                id="sidebar-close-btn"
+            >
+                <X size={24} />
+            </button>
+
             <div className="sidebar-header">
                 <div 
                     className="logo-container" 
                     style={{ padding: '0 12px', cursor: 'pointer', position: 'relative' }}
-                    onClick={() => setActiveTab('projects')}
+                    onClick={() => {
+                        setActiveTab('projects');
+                        if (onClose) onClose();
+                    }}
                 >
                     <img 
                         src={customLogo || ADELA_LOGO_B64} 
