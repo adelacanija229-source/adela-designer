@@ -201,7 +201,7 @@ const MaterialLibrary = () => {
         </div>
         <div className="header-actions">
           <button className="btn btn-outline" onClick={() => importInputRef.current?.click()}>
-            <Upload size={16} /> 가져오기
+            <Download size={16} /> 가져오기
           </button>
           <input 
             type="file" 
@@ -211,7 +211,7 @@ const MaterialLibrary = () => {
             accept=".json" 
           />
           <button className="btn btn-outline" onClick={handleExportAll}>
-            <Download size={16} /> 전체 내보내기
+            <Upload size={16} /> 전체 내보내기
           </button>
           <button className="btn btn-primary" onClick={() => setIsModalOpen(true)}>
             <Plus size={16} /> 새 마감재 등록
@@ -257,7 +257,7 @@ const MaterialLibrary = () => {
                   title={`${cat} 공종 내보내기`}
                   style={{ background: 'none', border: 'none', padding: '4px', cursor: 'pointer', color: '#64748b' }}
                 >
-                  <Download size={14} />
+                  <Upload size={14} />
                 </button>
               )}
             </div>
@@ -299,7 +299,7 @@ const MaterialLibrary = () => {
                   style={{ background: 'white', border: 'none', padding: '4px', borderRadius: '4px', cursor: 'pointer', boxShadow: '0 1px 2px rgba(0,0,0,0.1)' }}
                   title="개별 내보내기"
                 >
-                  <Download size={12} color="#2563eb" />
+                  <Upload size={12} color="#2563eb" />
                 </button>
                 <button 
                   onClick={() => handleDelete(item.id)}
