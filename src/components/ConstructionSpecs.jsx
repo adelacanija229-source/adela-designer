@@ -253,7 +253,8 @@ const ConstructionSpecs = ({ project, onPrint }) => {
       } else {
         input.setAttribute('value', input.value || '');
         if (input.tagName.toLowerCase() === 'textarea') {
-          input.innerHTML = input.value || '';
+          input.textContent = input.value || '';
+          input.style.height = input.scrollHeight + 'px'; // Ensure full height on print
         }
       }
     });
@@ -292,7 +293,9 @@ const ConstructionSpecs = ({ project, onPrint }) => {
         "    .no-print, .btn {" +
         "        display: none !important;" +
         "    }" +
-        "    .no-print-input { outline: none !important; border-bottom: 1px solid black !important; background: transparent !important; }" +
+        "    .no-print-input { outline: none !important; background: transparent !important; }" +
+        "    textarea.no-print-input { overflow: visible !important; resize: none !important; height: auto !important; border: none !important; white-space: pre-wrap !important; }" +
+        "    input.no-print-input { border-bottom: 1px solid black !important; }" +
         "    @page { margin: 1cm; }" +
         "}" +
         "@media screen {" +
@@ -919,19 +922,6 @@ const ConstructionSpecs = ({ project, onPrint }) => {
                         >
                           클릭하여 발주 참고용 이미지 첨부
                         </div>
-                      </div>
-
-                      <div style={{ marginTop: '40px', display: 'flex', justifyContent: 'flex-end', gap: '40px', paddingRight: '20px' }}>
-                         <div style={{ textAlign: 'center' }}>
-                           <div style={{ fontSize: '13px', color: '#64748b', marginBottom: '8px' }}>발주자 (서명)</div>
-                           <div style={{ borderBottom: '1px solid #cbd5e1', width: '120px', height: '30px' }}></div>
-                           <input type="text" className="no-print-input" placeholder="전화번호" style={{ border: 'none', borderBottom: '1px solid #cbd5e1', padding: '4px', width: '120px', fontSize: '12px', marginTop: '4px', textAlign: 'center' }} />
-                         </div>
-                         <div style={{ textAlign: 'center' }}>
-                           <div style={{ fontSize: '13px', color: '#64748b', marginBottom: '8px' }}>현장소장 확인</div>
-                           <input type="text" className="no-print-input" placeholder="소장 이름" style={{ border: 'none', borderBottom: '1px solid #cbd5e1', padding: '4px', width: '120px', fontSize: '12px', textAlign: 'center' }} />
-                           <input type="text" className="no-print-input" placeholder="전화번호" style={{ border: 'none', borderBottom: '1px solid #cbd5e1', padding: '4px', width: '120px', fontSize: '12px', marginTop: '4px', textAlign: 'center', display: 'block' }} />
-                         </div>
                       </div>
                     </div>
                   ));
