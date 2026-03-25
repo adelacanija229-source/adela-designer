@@ -12,7 +12,7 @@ import MaterialLibrary from './components/MaterialLibrary';
 import ConstructionSpecs from './components/ConstructionSpecs';
 import { offlineStore, STORES } from './db/offlineStore';
 
-const APP_VERSION = 'v1.26'; // Current version
+const APP_VERSION = 'v1.27'; // Current version
 
 const App = () => {
   const [activeTab, setActiveTab] = useState('projects');
@@ -26,6 +26,7 @@ const App = () => {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [priceUpdateInfo, setPriceUpdateInfo] = useState(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [updateSuccess, setUpdateSuccess] = useState(false);
 
   const loadProjects = useCallback(async () => {
     const list = await offlineStore.getAll(STORES.PROJECTS);
@@ -128,6 +129,14 @@ const App = () => {
     loadBackgroundImage();
     checkVersion();
     checkPriceUpdate();
+
+    // Check if we just completed an update
+    const completedVersion = localStorage.getItem('updateCompleted');
+    if (completedVersion === APP_VERSION) {
+      setUpdateSuccess(true);
+      localStorage.removeItem('updateCompleted');
+      setTimeout(() => setUpdateSuccess(false), 5000);
+    }
 
     // Register Service Worker for PWA
     if ('serviceWorker' in navigator) {
@@ -311,7 +320,10 @@ const App = () => {
               </div>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                 <button 
-                  onClick={() => window.location.reload(true)}
+                  onClick={() => {
+                    localStorage.setItem('updateCompleted', newVersionInfo.version);
+                    window.location.reload(true);
+                  }}
                   style={{ 
                     background: '#3b82f6', 
                     color: 'white', 
@@ -386,6 +398,31 @@ const App = () => {
               <button 
                 onClick={() => setPriceUpdateInfo(null)} 
                 style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.7)', cursor: 'pointer', padding: '4px' }}
+              >
+                ✕
+              </button>
+            </div>
+          )}
+
+          {updateSuccess && (
+            <div style={{
+              background: 'linear-gradient(90deg, #059669, #10b981)',
+              color: 'white',
+              padding: '10px 24px',
+              fontSize: '13px',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: '12px',
+              zIndex: 1001,
+              boxShadow: '0 4px 12px rgba(16, 185, 129, 0.2)',
+              animation: 'slideDown 0.3s ease-out'
+            }}>
+              <span style={{ fontSize: '18px' }}>✅</span>
+              <span style={{ fontWeight: '600' }}>최신 버전({APP_VERSION})으로 업데이트가 성공적으로 완료되었습니다!</span>
+              <button 
+                onClick={() => setUpdateSuccess(false)} 
+                style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', padding: '4px', marginLeft: '10px' }}
               >
                 ✕
               </button>
