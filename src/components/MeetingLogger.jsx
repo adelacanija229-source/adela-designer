@@ -10,7 +10,7 @@ const deriveStatus = (agenda) => {
 };
 
 const TRADE_CATEGORIES = [
-    '도장 공사', '도배공사', '바닥공사', '확장공사', '창호공사',
+    '구조 미팅', '도장 공사', '도배공사', '바닥공사', '확장공사', '창호공사',
     '가구공사', '욕실공사', '목공공사', '전기조명', '타일공사',
     '철거공사', '설비공사', '기타공사', '에어콘공사', '래핑공사',
     '배관청소', '준공청소', '특별 안건'
@@ -39,7 +39,7 @@ const MeetingLogger = ({ project, onPrint, onHasUnsavedChanges }) => {
     const [logs, setLogs] = useState([]);
     const [isEditing, setIsEditing] = useState(false);
     const [editingId, setEditingId] = useState(null);
-    const [viewMode, setViewMode] = useState('date'); // 'date' | 'topic'
+    const [viewMode, setViewMode] = useState('date'); // 'date' | 'topic' | 'structure'
     const [originalData, setOriginalData] = useState(null);
 
     const emptyForm = {
@@ -128,14 +128,36 @@ const MeetingLogger = ({ project, onPrint, onHasUnsavedChanges }) => {
         });
     }, [logs]);
 
-    const handlePrintHistory = () => {
+    const structureTimeline = useMemo(() => {
+        const map = {};
+        [...logs].reverse().forEach(log => {
+            (log.agendas || []).forEach(a => {
+                if (!(a.tradeCategories || []).includes('구조 미팅') && !normalizeKey(a.topic).includes('구조 미팅')) return;
+                
+                const rawTopic = (a.topic || '').trim();
+                if (!rawTopic) return;
+                const key = normalizeKey(rawTopic);
+                const status = deriveStatus(a);
+                if (!map[key]) map[key] = { topic: rawTopic, history: [], latestStatus: status };
+                map[key].history.push({ ...a, status, logDate: log.date, logId: log.id });
+                map[key].latestStatus = status;
+                if (rawTopic.length > map[key].topic.length) map[key].topic = rawTopic;
+            });
+        });
+        return Object.values(map).sort((a, b) => {
+            const order = { '보류': 0, '검토': 1, '완료': 2 };
+            return (order[a.latestStatus] ?? 1) - (order[b.latestStatus] ?? 1);
+        });
+    }, [logs]);
+
+    const handlePrintHistory = (data = topicTimeline, titleSuffix = '안건별 히스토리') => {
         const projectName = project?.name || '현장명 미입력';
         const today = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
         const STATUS_LABEL = { '완료': '결정 완료', '보류': '보류중', '검토': '미정' };
         const STATUS_COLOR = { '완료': '#6B8E6B', '보류': '#B87C4C', '검토': '#A35050' };
         const STATUS_BG = { '완료': 'rgba(107, 142, 107, 0.15)', '보류': 'rgba(184, 124, 76, 0.15)', '검토': 'rgba(163, 80, 80, 0.15)' };
 
-        const topicsHtml = topicTimeline.map(group => {
+        const topicsHtml = data.map(group => {
             const headerBg = group.latestStatus === '완료' ? 'rgba(107, 142, 107, 0.05)' : 'rgba(184, 124, 76, 0.05)';
             const borderColor = STATUS_COLOR[group.latestStatus] || '#aaa';
 
@@ -178,7 +200,7 @@ const MeetingLogger = ({ project, onPrint, onHasUnsavedChanges }) => {
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title>${projectName} - 안건별 히스토리</title>
+  <title>${projectName} - ${titleSuffix}</title>
   <style>
     @page { size: A4; margin: 20mm 18mm; }
     * { box-sizing: border-box; font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; }
@@ -189,8 +211,8 @@ const MeetingLogger = ({ project, onPrint, onHasUnsavedChanges }) => {
   </style>
 </head>
 <body>
-  <h1>${projectName} — 미팅 안건 히스토리</h1>
-  <p class="meta">출력일: ${today} &nbsp;|&nbsp; 전체 안건: ${topicTimeline.length}건 (보류/미정: ${topicTimeline.filter(t => t.latestStatus !== '완료').length}건)</p>
+  <h1>${projectName} — ${titleSuffix}</h1>
+  <p class="meta">출력일: ${today} &nbsp;|&nbsp; 전체 안건: ${data.length}건 (보류/미정: ${data.filter(t => t.latestStatus !== '완료').length}건)</p>
   <hr class="divider" />
   ${topicsHtml}
 </body>
@@ -521,13 +543,29 @@ const MeetingLogger = ({ project, onPrint, onHasUnsavedChanges }) => {
                         style={{ fontSize: '13px' }}
                         onClick={() => setViewMode('topic')}
                     >
-                        <GitBranch size={15} /> 견적서 기준 공정별 히스토리
+                        <GitBranch size={15} /> 전체 안건별 히스토리
+                    </button>
+                    <button
+                        className={`btn ${viewMode === 'structure' ? 'btn-primary' : 'btn-outline'}`}
+                        style={{ fontSize: '13px' }}
+                        onClick={() => setViewMode('structure')}
+                    >
+                        <GitBranch size={15} /> 구조 미팅 히스토리
                     </button>
                     {viewMode === 'topic' && topicTimeline.length > 0 && (
                         <button
                             className="btn btn-outline no-print"
                             style={{ fontSize: '13px', marginLeft: '8px', borderColor: '#2E7D32', color: '#2E7D32' }}
-                            onClick={handlePrintHistory}
+                            onClick={() => handlePrintHistory(topicTimeline, '안건별 히스토리')}
+                        >
+                            <Printer size={15} /> 히스토리 출력 (A4)
+                        </button>
+                    )}
+                    {viewMode === 'structure' && structureTimeline.length > 0 && (
+                        <button
+                            className="btn btn-outline no-print"
+                            style={{ fontSize: '13px', marginLeft: '8px', borderColor: '#2E7D32', color: '#2E7D32' }}
+                            onClick={() => handlePrintHistory(structureTimeline, '구조 미팅 히스토리')}
                         >
                             <Printer size={15} /> 히스토리 출력 (A4)
                         </button>

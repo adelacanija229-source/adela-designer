@@ -1,5 +1,5 @@
 {
-  "version": "v1.26",
+  "version": "v1.27",
   "url": "https://adelacanija229-source.github.io/adela-designer/",
-  "notes": "v1.26 모바일 UI 최적화 완료, 자재 라이브러리 선별 내보내기, 스마트 단가표 알림(뱃지) 및 출력물 버그 수정(서명란 제거, 텍스트 잘림 방지)"
+  "notes": "v1.27 회의록 '구조 미팅' 카테고리 추가 및 전용 히스토리 탭 추가, 히스토리 출력 기능 개선"
 }
