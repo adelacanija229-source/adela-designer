@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Plus, FileText, Trash2, Edit2, Layout, Image as ImageIcon, CheckCircle2, ChevronRight, Save, LayoutGrid, List, Layers, X, Search } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Plus, FileText, Trash2, Edit2, Layout, Image as ImageIcon, CheckCircle2, ChevronRight, Save, LayoutGrid, List, Layers, X, Search, Upload } from 'lucide-react';
 import { offlineStore, STORES } from '../db/offlineStore';
 
 const ProposalBuilder = ({ project, onPrint }) => {
