@@ -14,13 +14,19 @@ import AssetManager from './components/AssetManager';
 import ProposalBuilder from './components/ProposalBuilder';
 import { offlineStore, STORES } from './db/offlineStore';
 
-const APP_VERSION = 'v1.30'; // Current version
+const APP_VERSION = 'v1.31'; // Current version
 
 const App = () => {
   const [activeTab, setActiveTab] = useState('projects');
   const [projects, setProjects] = useState([]);
   const [activeProjectId, setActiveProjectId] = useState(null);
-  const [printMode, setPrintMode] = useState('full');
+  const [printMode, setPrintMode] = useState({
+    meetings: true,
+    estimates: true,
+    furniture: true,
+    specs: true,
+    proposals: true
+  });
   const [isMemoOpen, setIsMemoOpen] = useState(false);
   const [globalMemo, setGlobalMemo] = useState('');
   const [backgroundImage, setBackgroundImage] = useState(null);
@@ -261,29 +267,49 @@ const App = () => {
       return (
         <MeetingLogger 
           project={currentProject} 
-          onPrint={() => { setPrintMode('meetings'); setActiveTab('export'); setTimeout(() => window.print(), 300); }} 
+          onPrint={() => { 
+            setPrintMode({ meetings: true, estimates: false, furniture: false, specs: false, proposals: false }); 
+            setActiveTab('export'); 
+            setTimeout(() => window.print(), 500); 
+          }} 
           onHasUnsavedChanges={setHasUnsavedChanges}
         />
       );
     }
     if (activeTab === 'estimates') {
       return (
-        <EstimateSystem project={currentProject} onPrint={() => { setPrintMode('estimates'); setActiveTab('export'); setTimeout(() => window.print(), 300); }} />
+        <EstimateSystem project={currentProject} onPrint={() => { 
+          setPrintMode({ meetings: false, estimates: true, furniture: false, specs: false, proposals: false }); 
+          setActiveTab('export'); 
+          setTimeout(() => window.print(), 500); 
+        }} />
       );
     }
     if (activeTab === 'furniture') {
       return (
-        <FurnitureManager project={currentProject} onSaved={loadProjects} onPrint={() => { setPrintMode('furniture'); setActiveTab('export'); setTimeout(() => window.print(), 300); }} />
+        <FurnitureManager project={currentProject} onSaved={loadProjects} onPrint={() => { 
+          setPrintMode({ meetings: false, estimates: false, furniture: true, specs: false, proposals: false }); 
+          setActiveTab('export'); 
+          setTimeout(() => window.print(), 500); 
+        }} />
       );
     }
     if (activeTab === 'export') {
       return <DocumentGenerator project={currentProject} printMode={printMode} setPrintMode={setPrintMode} />;
     }
     if (activeTab === 'specs') {
-      return <ConstructionSpecs project={currentProject} onPrint={() => { setPrintMode('specs'); setActiveTab('export'); setTimeout(() => window.print(), 300); }} />;
+      return <ConstructionSpecs project={currentProject} onPrint={() => { 
+        setPrintMode({ meetings: false, estimates: false, furniture: false, specs: true, proposals: false }); 
+        setActiveTab('export'); 
+        setTimeout(() => window.print(), 500); 
+      }} />;
     }
     if (activeTab === 'proposal_builder') {
-      return <ProposalBuilder project={currentProject} onHasUnsavedChanges={setHasUnsavedChanges} onPrint={(p) => { setPrintMode('proposals'); setActiveTab('export'); setTimeout(() => window.print(), 300); }} />;
+      return <ProposalBuilder project={currentProject} onHasUnsavedChanges={setHasUnsavedChanges} onPrint={(p) => { 
+        setPrintMode({ meetings: false, estimates: false, furniture: false, specs: false, proposals: true }); 
+        setActiveTab('export'); 
+        setTimeout(() => window.print(), 500); 
+      }} />;
     }
   };
 

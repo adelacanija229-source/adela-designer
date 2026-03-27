@@ -45,20 +45,38 @@ const DocumentGenerator = ({ project, isPrintView = false, printMode = 'full', s
 
     if (!project?.id) return null;
 
-    const showMeetings = printMode === 'full' || printMode === 'meetings';
-    const showEstimates = printMode === 'full' || printMode === 'estimates';
-    const showFurniture = printMode === 'full' || printMode === 'furniture';
-    const showSpecs = printMode === 'full' || printMode === 'specs';
-    const showProposals = printMode === 'full' || printMode === 'proposals';
+    const showMeetings = printMode.meetings;
+    const showEstimates = printMode.estimates;
+    const showFurniture = printMode.furniture;
+    const showSpecs = printMode.specs;
+    const showProposals = printMode.proposals;
 
-    const getModeLabel = () => ({
-        full: '전체 문서',
-        meetings: '디자인 미팅 회의록',
-        estimates: '견적 / 변경 관리 내역',
-        furniture: '가구 / 별도 계약 내역',
-        specs: '공간별 특기 시방서',
-        proposals: '공간 디자인 제안서'
-    }[printMode]);
+    const getModeLabel = () => {
+        const labels = [];
+        if (showMeetings) labels.push('회의록');
+        if (showEstimates) labels.push('견적서');
+        if (showFurniture) labels.push('가구내역');
+        if (showSpecs) labels.push('시방서');
+        if (showProposals) labels.push('제안서');
+        
+        if (labels.length === 5) return '전체 문서';
+        if (labels.length === 0) return '실행된 항목 없음';
+        return labels.join(' + ');
+    };
+
+    const toggleMode = (key) => {
+        setPrintMode(prev => ({ ...prev, [key]: !prev[key] }));
+    };
+
+    const setAll = (val) => {
+        setPrintMode({
+            meetings: val,
+            estimates: val,
+            furniture: val,
+            specs: val,
+            proposals: val
+        });
+    };
 
     const calculateTotal = (base, useVat, useOverhead, overheadType, overheadAmount, useDiscount, discountType, discountAmount) => {
         let dc = 0;
@@ -130,24 +148,30 @@ const DocumentGenerator = ({ project, isPrintView = false, printMode = 'full', s
                             <Printer size={18} /> 인쇄 / PDF 저장
                         </button>
                     </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '16px', marginTop: '8px' }}>
+                    <div style={{ display: 'flex', gap: '12px', marginBottom: '16px' }}>
+                        <button className="btn btn-outline" onClick={() => setAll(true)} style={{ fontSize: '11px', padding: '4px 12px' }}>전체 선택</button>
+                        <button className="btn btn-outline" onClick={() => setAll(false)} style={{ fontSize: '11px', padding: '4px 12px' }}>전체 해제</button>
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '12px', marginTop: '8px' }}>
                         {[
-                            { key: 'full', icon: <FileText size={24} />, title: '전체 문서', color: 'var(--primary-red)' },
-                            { key: 'meetings', icon: <BookOpen size={24} />, title: '회의록만', color: '#0369A1' },
-                            { key: 'estimates', icon: <Calculator size={24} />, title: '견적/변경만', color: '#059669' },
-                            { key: 'furniture', icon: <ShoppingBag size={24} />, title: '가구 내역만', color: '#7C3AED' },
-                            { key: 'specs', icon: <Layers size={24} />, title: '시방서만', color: '#2563EB' },
-                            { key: 'proposals', icon: <Printer size={24} />, title: '제안서만', color: '#DB2777' },
+                            { key: 'meetings', icon: <BookOpen size={20} />, title: '회의록', color: '#0369A1' },
+                            { key: 'estimates', icon: <Calculator size={20} />, title: '견적/변경', color: '#059669' },
+                            { key: 'furniture', icon: <ShoppingBag size={20} />, title: '가구내역', color: '#7C3AED' },
+                            { key: 'specs', icon: <Layers size={20} />, title: '시방서', color: '#2563EB' },
+                            { key: 'proposals', icon: <Printer size={20} />, title: '제안서', color: '#DB2777' },
                         ].map(({ key, icon, title, color }) => (
-                            <div key={key} onClick={() => setPrintMode(key)} style={{
-                                padding: '16px', borderRadius: '12px', cursor: 'pointer', textAlign: 'center',
-                                border: 'none',
-                                background: 'transparent',
+                            <div key={key} onClick={() => toggleMode(key)} style={{
+                                padding: '12px', 
+                                borderRadius: '12px', 
+                                cursor: 'pointer', 
+                                textAlign: 'center',
+                                border: printMode[key] ? `2px solid ${color}` : '1px solid #eee',
+                                background: printMode[key] ? `${color}08` : 'transparent',
                                 transition: 'all 0.2s',
-                                opacity: printMode === key ? 1 : 0.6
+                                opacity: printMode[key] ? 1 : 0.5
                             }}>
-                                <div style={{ color: printMode === key ? color : 'var(--text-muted)', marginBottom: '8px' }}>{icon}</div>
-                                <h4 style={{ fontSize: '13px', fontWeight: '700', color: printMode === key ? color : 'var(--text-main)' }}>{title}</h4>
+                                <div style={{ color: printMode[key] ? color : 'var(--text-muted)', marginBottom: '4px' }}>{icon}</div>
+                                <h4 style={{ fontSize: '12px', fontWeight: '700', color: printMode[key] ? color : 'var(--text-main)' }}>{title}</h4>
                             </div>
                         ))}
                     </div>
@@ -213,7 +237,7 @@ const DocumentGenerator = ({ project, isPrintView = false, printMode = 'full', s
 
                 {/* Estimates (Comparison) */}
                 {showEstimates && estimates.length > 0 && (
-                    <div style={{ marginBottom: '40px' }}>
+                    <div style={{ marginBottom: '40px', pageBreakBefore: (showMeetings && logs.length > 0) ? 'always' : 'auto' }}>
                         <h2 style={{ fontSize: '16px', borderBottom: '2px solid #059669', paddingBottom: '8px', color: '#059669', marginBottom: '16px' }}>■ 견적 및 변경 내역 추적</h2>
                         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px' }}>
                             <thead><tr style={{ background: '#059669', color: 'white' }}>
@@ -337,7 +361,7 @@ const DocumentGenerator = ({ project, isPrintView = false, printMode = 'full', s
 
                 {/* Proposals */}
                 {showProposals && proposals.length > 0 && (
-                    <div style={{ marginBottom: '40px', pageBreakBefore: 'always' }}>
+                    <div style={{ marginBottom: '40px', pageBreakBefore: (showMeetings || showEstimates || showFurniture || showSpecs) ? 'always' : 'auto' }}>
                         <h2 style={{ fontSize: '16px', borderBottom: '2px solid #DB2777', paddingBottom: '8px', color: '#DB2777', marginBottom: '16px' }}>■ 공간 디자인 제안서</h2>
                         
                         {proposals.map(prop => (
@@ -378,7 +402,7 @@ const DocumentGenerator = ({ project, isPrintView = false, printMode = 'full', s
                 )}
 
                 {/* Final Summary Footer */}
-                {(printMode === 'full' || printMode === 'estimates') && (
+                {(showEstimates) && (
                     <div style={{ marginTop: '50px', border: '2px solid var(--text-main)', padding: '24px', borderRadius: '8px', pageBreakInside: 'avoid' }}>
                         <h3 style={{ fontSize: '18px', fontWeight: '800', marginBottom: '20px', textAlign: 'center' }}>종합 견적 및 고객 확인</h3>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px' }}>
