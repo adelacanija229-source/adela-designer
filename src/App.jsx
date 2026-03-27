@@ -10,9 +10,11 @@ import PriceLibrary from './components/PriceLibrary';
 import DesignerMemo from './components/DesignerMemo';
 import MaterialLibrary from './components/MaterialLibrary';
 import ConstructionSpecs from './components/ConstructionSpecs';
+import AssetManager from './components/AssetManager';
+import ProposalBuilder from './components/ProposalBuilder';
 import { offlineStore, STORES } from './db/offlineStore';
 
-const APP_VERSION = 'v1.27'; // Current version
+const APP_VERSION = 'v1.28'; // Current version
 
 const App = () => {
   const [activeTab, setActiveTab] = useState('projects');
@@ -236,6 +238,10 @@ const App = () => {
       return <MaterialLibrary />;
     }
 
+    if (activeTab === 'asset_library') {
+      return <AssetManager />;
+    }
+
     if (!activeProjectId) {
       return (
         <div className="empty-state">
@@ -270,6 +276,9 @@ const App = () => {
     }
     if (activeTab === 'specs') {
       return <ConstructionSpecs project={currentProject} onPrint={() => { setPrintMode('specs'); setActiveTab('export'); setTimeout(() => window.print(), 300); }} />;
+    }
+    if (activeTab === 'proposal_builder') {
+      return <ProposalBuilder project={currentProject} onPrint={() => { setPrintMode('proposals'); setActiveTab('export'); setTimeout(() => window.print(), 300); }} />;
     }
   };
 

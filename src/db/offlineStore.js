@@ -1,7 +1,7 @@
 import { openDB } from 'idb';
 
 const DB_NAME = 'adela_workspace_db';
-const DB_VERSION = 4;
+const DB_VERSION = 5;
 
 export const STORES = {
     PROJECTS: 'projects',
@@ -12,7 +12,9 @@ export const STORES = {
     SETTINGS: 'settings',
     DESIGNER_MEMOS: 'designer_memos',
     MATERIAL_LIBRARY: 'material_library',
-    CONSTRUCTION_SPECS: 'construction_specs'
+    CONSTRUCTION_SPECS: 'construction_specs',
+    ASSET_LIBRARY: 'asset_library',
+    PROPOSALS: 'proposals'
 };
 
 let dbPromise = null;
@@ -53,6 +55,15 @@ export const initDB = async () => {
                 }
                 if (!db.objectStoreNames.contains(STORES.CONSTRUCTION_SPECS)) {
                     const store = db.createObjectStore(STORES.CONSTRUCTION_SPECS, { keyPath: 'id' });
+                    store.createIndex('projectId', 'projectId');
+                }
+                if (!db.objectStoreNames.contains(STORES.ASSET_LIBRARY)) {
+                    const store = db.createObjectStore(STORES.ASSET_LIBRARY, { keyPath: 'id' });
+                    store.createIndex('type', 'type');
+                    store.createIndex('category', 'category');
+                }
+                if (!db.objectStoreNames.contains(STORES.PROPOSALS)) {
+                    const store = db.createObjectStore(STORES.PROPOSALS, { keyPath: 'id' });
                     store.createIndex('projectId', 'projectId');
                 }
             },

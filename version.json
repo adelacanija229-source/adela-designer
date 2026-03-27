@@ -1,5 +1,5 @@
 {
-  "version": "v1.27",
+  "version": "v1.28",
   "url": "https://adelacanija229-source.github.io/adela-designer/",
-  "notes": "v1.27 회의록 '구조 미팅' 카테고리 추가 및 전용 히스토리 탭 추가, 히스토리 출력 기능 개선"
+  "notes": "개인 라이브러리(Asset Management) 및 디자인 제안서 빌더(Proposal Builder) 기능 추가"
 }

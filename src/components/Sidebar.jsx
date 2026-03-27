@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
-import { Briefcase, FileText, Calculator, Printer, ShoppingBag, Book, Image, Upload, Layers, ClipboardList, X } from 'lucide-react';
+import { Briefcase, FileText, Calculator, Printer, ShoppingBag, Book, Image, Upload, Layers, ClipboardList, X, Layout, FolderOpen } from 'lucide-react';
 import { ADELA_LOGO_B64 } from '../assets/logo';
 import { STORES, offlineStore } from '../db/offlineStore';
 
@@ -65,6 +65,7 @@ const Sidebar = ({ activeTab, setActiveTab, onBackgroundUpload, hasPriceUpdate, 
             items: [
                 { id: 'projects', icon: <Briefcase size={20} />, label: '현장 정보 (기본설정)' },
                 { id: 'meetings', icon: <FileText size={20} />, label: '디자인 미팅 회의록' },
+                { id: 'proposal_builder', icon: <Layout size={20} />, label: '디자인 제안서 제작' },
                 { id: 'estimates', icon: <Calculator size={20} />, label: '견적 / 변경 관리' },
                 { id: 'furniture', icon: <ShoppingBag size={20} />, label: '가구 / 별도 계약' },
             ]
@@ -78,6 +79,7 @@ const Sidebar = ({ activeTab, setActiveTab, onBackgroundUpload, hasPriceUpdate, 
         {
             title: 'LIBRARIES',
             items: [
+                { id: 'asset_library', icon: <FolderOpen size={20} />, label: '개인 라이브러리 (Asset)' },
                 { id: 'materials', icon: <Layers size={20} />, label: '마감재 라이브러리' },
                 { id: 'library', icon: <Book size={20} />, label: '단가 라이브러리' },
             ]
