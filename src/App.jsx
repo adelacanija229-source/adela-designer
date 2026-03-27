@@ -14,7 +14,7 @@ import AssetManager from './components/AssetManager';
 import ProposalBuilder from './components/ProposalBuilder';
 import { offlineStore, STORES } from './db/offlineStore';
 
-const APP_VERSION = 'v1.29'; // Current version
+const APP_VERSION = 'v1.30'; // Current version
 
 const App = () => {
   const [activeTab, setActiveTab] = useState('projects');

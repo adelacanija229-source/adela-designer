@@ -1,5 +1,5 @@
 {
-  "version": "v1.29",
+  "version": "v1.30",
   "url": "https://adelacanija229-source.github.io/adela-designer/",
-  "notes": "제안서 직접 사진 업로드 기능 추가 및 PDF 미리보기/출력 연동 완료"
+  "notes": "제안서 이탈 방지 경고창 추가, 이미지 자동 압축(업로드 개선), 프로젝트 삭제 연동 오류 수정"
 }
