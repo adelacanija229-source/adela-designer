@@ -33,7 +33,12 @@ const App = () => {
   const loadProjects = useCallback(async () => {
     const list = await offlineStore.getAll(STORES.PROJECTS);
     setProjects(list.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)));
-  }, []);
+    
+    // If current active project is deleted, clear it
+    if (activeProjectId && !list.some(p => p.id === activeProjectId)) {
+      setActiveProjectId(null);
+    }
+  }, [activeProjectId]);
 
   const loadBackgroundImage = useCallback(async () => {
     try {
@@ -278,7 +283,7 @@ const App = () => {
       return <ConstructionSpecs project={currentProject} onPrint={() => { setPrintMode('specs'); setActiveTab('export'); setTimeout(() => window.print(), 300); }} />;
     }
     if (activeTab === 'proposal_builder') {
-      return <ProposalBuilder project={currentProject} onPrint={() => { setPrintMode('proposals'); setActiveTab('export'); setTimeout(() => window.print(), 300); }} />;
+      return <ProposalBuilder project={currentProject} onHasUnsavedChanges={setHasUnsavedChanges} onPrint={(p) => { setPrintMode('proposals'); setActiveTab('export'); setTimeout(() => window.print(), 300); }} />;
     }
   };
 

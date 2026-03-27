@@ -2,13 +2,22 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Plus, FileText, Trash2, Edit2, Layout, Image as ImageIcon, CheckCircle2, ChevronRight, Save, LayoutGrid, List, Layers, X, Search, Upload } from 'lucide-react';
 import { offlineStore, STORES } from '../db/offlineStore';
 
-const ProposalBuilder = ({ project, onPrint }) => {
+const ProposalBuilder = ({ project, onPrint, onHasUnsavedChanges }) => {
   const [proposals, setProposals] = useState([]);
   const [activeProposal, setActiveProposal] = useState(null);
   const [isAssetSelectorOpen, setIsAssetSelectorOpen] = useState(false);
   const [assets, setAssets] = useState([]);
   const [targetSectionIndex, setTargetSectionIndex] = useState(null);
   const directUploadRef = useRef(null);
+
+  // Track unsaved changes
+  useEffect(() => {
+    if (activeProposal) {
+      onHasUnsavedChanges?.(true);
+    } else {
+      onHasUnsavedChanges?.(false);
+    }
+  }, [activeProposal, onHasUnsavedChanges]);
 
   // Filter components for asset selector
   const [searchTerm, setSearchTerm] = useState('');
@@ -58,6 +67,7 @@ const ProposalBuilder = ({ project, onPrint }) => {
       const toSave = { ...activeProposal, updatedAt: new Date().toISOString() };
       await offlineStore.save(STORES.PROPOSALS, toSave);
       await loadProposals();
+      onHasUnsavedChanges?.(false);
       setActiveProposal(null);
       alert('제안서가 저장되었습니다.');
     } catch (err) {
@@ -114,29 +124,61 @@ const ProposalBuilder = ({ project, onPrint }) => {
     setIsAssetSelectorOpen(false);
   };
 
-  const handleDirectUpload = (e) => {
+  const handleDirectUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file || targetSectionIndex === null) return;
 
-    if (file.size > 5 * 1024 * 1024) {
-      alert("이미지는 5MB 이하로 업로드해주세요.");
-      return;
-    }
+    // Image compression helper
+    const compressImage = (file) => {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+          const img = new Image();
+          img.src = event.target.result;
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            let width = img.width;
+            let height = img.height;
+            const MAX_SIZE = 1200;
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const imageData = reader.result;
+            if (width > height) {
+              if (width > MAX_SIZE) {
+                height *= MAX_SIZE / width;
+                width = MAX_SIZE;
+              }
+            } else {
+              if (height > MAX_SIZE) {
+                width *= MAX_SIZE / height;
+                height = MAX_SIZE;
+              }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            resolve(canvas.toDataURL('image/jpeg', 0.8)); // 80% quality
+          };
+        };
+      });
+    };
+
+    try {
+      const compressedData = await compressImage(file);
       setActiveProposal(prev => {
         const newSections = [...prev.sections];
         newSections[targetSectionIndex].assets = [
           ...newSections[targetSectionIndex].assets, 
-          { id: crypto.randomUUID(), image: imageData, name: file.name }
+          { id: crypto.randomUUID(), image: compressedData, name: file.name }
         ];
         return { ...prev, sections: newSections };
       });
       if (directUploadRef.current) directUploadRef.current.value = '';
-    };
-    reader.readAsDataURL(file);
+    } catch (err) {
+      console.error('Upload failed', err);
+      alert('이미지 처리 중 오류가 발생했습니다.');
+    }
   };
 
   const removeAssetFromSection = (sectionIndex, assetId) => {
@@ -220,7 +262,13 @@ const ProposalBuilder = ({ project, onPrint }) => {
           />
         </div>
         <div className="header-actions">
-          <button className="btn btn-outline" onClick={() => setActiveProposal(null)}>취소</button>
+          <button className="btn btn-outline" onClick={() => {
+            if (activeProposal.sections.some(s => s.assets.length > 0) || activeProposal.title !== `${project.name} 공간 제안서`) {
+              if (!window.confirm('작성 중인 내용이 있습니다. 취소하시겠습니까?')) return;
+            }
+            onHasUnsavedChanges?.(false);
+            setActiveProposal(null);
+          }}>취소</button>
           <button className="btn btn-primary" onClick={handleSave}>
             <Save size={16} /> 저장 및 완료
           </button>
