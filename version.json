@@ -1,5 +1,5 @@
 {
-  "version": "v1.28",
+  "version": "v1.29",
   "url": "https://adelacanija229-source.github.io/adela-designer/",
-  "notes": "개인 라이브러리(Asset Management) 및 디자인 제안서 빌더(Proposal Builder) 기능 추가"
+  "notes": "제안서 직접 사진 업로드 기능 추가 및 PDF 미리보기/출력 연동 완료"
 }

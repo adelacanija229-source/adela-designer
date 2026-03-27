@@ -8,6 +8,7 @@ const ProposalBuilder = ({ project, onPrint }) => {
   const [isAssetSelectorOpen, setIsAssetSelectorOpen] = useState(false);
   const [assets, setAssets] = useState([]);
   const [targetSectionIndex, setTargetSectionIndex] = useState(null);
+  const directUploadRef = useRef(null);
 
   // Filter components for asset selector
   const [searchTerm, setSearchTerm] = useState('');
@@ -113,6 +114,31 @@ const ProposalBuilder = ({ project, onPrint }) => {
     setIsAssetSelectorOpen(false);
   };
 
+  const handleDirectUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file || targetSectionIndex === null) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert("이미지는 5MB 이하로 업로드해주세요.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const imageData = reader.result;
+      setActiveProposal(prev => {
+        const newSections = [...prev.sections];
+        newSections[targetSectionIndex].assets = [
+          ...newSections[targetSectionIndex].assets, 
+          { id: crypto.randomUUID(), image: imageData, name: file.name }
+        ];
+        return { ...prev, sections: newSections };
+      });
+      if (directUploadRef.current) directUploadRef.current.value = '';
+    };
+    reader.readAsDataURL(file);
+  };
+
   const removeAssetFromSection = (sectionIndex, assetId) => {
     setActiveProposal(prev => {
       const newSections = [...prev.sections];
@@ -164,7 +190,7 @@ const ProposalBuilder = ({ project, onPrint }) => {
                 <button className="btn btn-outline" style={{ flex: 1, fontSize: '13px' }} onClick={() => setActiveProposal(p)}>
                   <Edit2 size={14} /> 편집하기
                 </button>
-                <button className="btn btn-outline" style={{ flex: 1, fontSize: '13px' }}>
+                <button className="btn btn-outline" style={{ flex: 1, fontSize: '13px' }} onClick={() => onPrint(p)}>
                   <Layout size={14} /> PDF 미리보기
                 </button>
               </div>
@@ -246,6 +272,16 @@ const ProposalBuilder = ({ project, onPrint }) => {
                   <Plus size={24} />
                   <span style={{ fontSize: '12px', fontWeight: '600' }}>라이브러리에서 추가</span>
                 </button>
+                <button 
+                  onClick={() => { setTargetSectionIndex(idx); directUploadRef.current?.click(); }}
+                  style={{ 
+                    height: '140px', borderRadius: '12px', border: '2px dashed #e2e8f0', background: '#f8fafc', color: '#94a3b8',
+                    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '8px', cursor: 'pointer'
+                  }}
+                >
+                  <Upload size={24} />
+                  <span style={{ fontSize: '12px', fontWeight: '600' }}>파일 직접 업로드</span>
+                </button>
               </div>
               
               <div className="section-memo">
@@ -269,6 +305,8 @@ const ProposalBuilder = ({ project, onPrint }) => {
           </button>
         </div>
       </div>
+
+      <input type="file" ref={directUploadRef} onChange={handleDirectUpload} style={{ display: 'none' }} accept="image/*" />
 
       {/* Asset Selection Modal */}
       {isAssetSelectorOpen && (

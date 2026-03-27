@@ -8,6 +8,7 @@ const DocumentGenerator = ({ project, isPrintView = false, printMode = 'full', s
     const [estimates, setEstimates] = useState([]);
     const [furniture, setFurniture] = useState([]);
     const [specs, setSpecs] = useState(null);
+    const [proposals, setProposals] = useState([]);
 
     useEffect(() => {
         const loadData = async () => {
@@ -25,6 +26,9 @@ const DocumentGenerator = ({ project, isPrintView = false, printMode = 'full', s
             if (specList && specList.length > 0) {
                 setSpecs(specList[0]);
             }
+
+            const propList = await offlineStore.getByIndex(STORES.PROPOSALS, 'projectId', project.id);
+            setProposals(propList.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)));
         };
 
         loadData();
@@ -45,13 +49,15 @@ const DocumentGenerator = ({ project, isPrintView = false, printMode = 'full', s
     const showEstimates = printMode === 'full' || printMode === 'estimates';
     const showFurniture = printMode === 'full' || printMode === 'furniture';
     const showSpecs = printMode === 'full' || printMode === 'specs';
+    const showProposals = printMode === 'full' || printMode === 'proposals';
 
     const getModeLabel = () => ({
         full: '전체 문서',
         meetings: '디자인 미팅 회의록',
         estimates: '견적 / 변경 관리 내역',
         furniture: '가구 / 별도 계약 내역',
-        specs: '공간별 특기 시방서'
+        specs: '공간별 특기 시방서',
+        proposals: '공간 디자인 제안서'
     }[printMode]);
 
     const calculateTotal = (base, useVat, useOverhead, overheadType, overheadAmount, useDiscount, discountType, discountAmount) => {
@@ -131,6 +137,7 @@ const DocumentGenerator = ({ project, isPrintView = false, printMode = 'full', s
                             { key: 'estimates', icon: <Calculator size={24} />, title: '견적/변경만', color: '#059669' },
                             { key: 'furniture', icon: <ShoppingBag size={24} />, title: '가구 내역만', color: '#7C3AED' },
                             { key: 'specs', icon: <Layers size={24} />, title: '시방서만', color: '#2563EB' },
+                            { key: 'proposals', icon: <Printer size={24} />, title: '제안서만', color: '#DB2777' },
                         ].map(({ key, icon, title, color }) => (
                             <div key={key} onClick={() => setPrintMode(key)} style={{
                                 padding: '16px', borderRadius: '12px', cursor: 'pointer', textAlign: 'center',
@@ -323,6 +330,48 @@ const DocumentGenerator = ({ project, isPrintView = false, printMode = 'full', s
                                         ))}
                                     </tbody>
                                 </table>
+                            </div>
+                        ))}
+                    </div>
+                )}
+
+                {/* Proposals */}
+                {showProposals && proposals.length > 0 && (
+                    <div style={{ marginBottom: '40px', pageBreakBefore: 'always' }}>
+                        <h2 style={{ fontSize: '16px', borderBottom: '2px solid #DB2777', paddingBottom: '8px', color: '#DB2777', marginBottom: '16px' }}>■ 공간 디자인 제안서</h2>
+                        
+                        {proposals.map(prop => (
+                            <div key={prop.id} style={{ marginBottom: '32px' }}>
+                                <div style={{ background: '#fdf2f8', padding: '10px 16px', borderRadius: '8px', marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <h3 style={{ fontSize: '15px', fontWeight: '800', color: '#9d174d', margin: 0 }}>{prop.title}</h3>
+                                    <span style={{ fontSize: '12px', color: '#be185d' }}>{new Date(prop.updatedAt).toLocaleDateString()}</span>
+                                </div>
+
+                                {prop.sections.map((section, sIdx) => (
+                                    <div key={section.id} style={{ marginBottom: '24px', pageBreakInside: 'avoid' }}>
+                                        <div style={{ fontSize: '13px', fontWeight: '700', marginBottom: '12px', color: '#334155', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                            <span style={{ background: '#334155', color: 'white', padding: '2px 6px', borderRadius: '4px', fontSize: '10px' }}>{section.type.toUpperCase()}</span>
+                                            {section.name}
+                                        </div>
+                                        
+                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '16px', marginBottom: '12px' }}>
+                                            {section.assets.map((asset, aIdx) => (
+                                                <div key={aIdx} style={{ border: '1px solid #eee', borderRadius: '8px', overflow: 'hidden' }}>
+                                                    <img src={asset.image} alt={asset.name} style={{ width: '100%', height: '180px', objectFit: 'cover', display: 'block' }} />
+                                                    <div style={{ padding: '8px', fontSize: '11px', background: '#fafafa', borderTop: '1px solid #eee', textAlign: 'center', color: '#64748b' }}>
+                                                        {asset.name}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                        
+                                        {section.memo && (
+                                            <div style={{ padding: '12px 16px', background: '#f8fafc', borderLeft: '3px solid #cbd5e1', fontSize: '12px', color: '#475569', lineHeight: '1.6', whiteSpace: 'pre-wrap' }}>
+                                                {section.memo}
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
                             </div>
                         ))}
                     </div>
