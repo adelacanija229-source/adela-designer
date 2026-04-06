@@ -194,7 +194,7 @@ const ProjectRegistration = ({ projects, onSaved, onSelect, activeProjectId }) =
                         onChange={handleBgFileChange} 
                     />
                     <button className="btn btn-outline" onClick={handleImportClick} title="관리자로부터 배정받은 현장 파일(.json)을 불러와 등록합니다.">
-                        <Upload size={18} /> 배정받은 현장 등록 (.json)
+                        <Download size={18} /> 배정받은 현장 등록 (가져오기)
                     </button>
                     <button className="btn btn-primary" onClick={handleStartCreate}>
                         <Plus size={18} /> 새 현장 등록
@@ -424,8 +424,8 @@ const ProjectRegistration = ({ projects, onSaved, onSelect, activeProjectId }) =
                             <button className="btn-icon" onClick={(e) => handleBgUploadClick(p.id, e)} title="현장 배경 이미지 설정">
                                 <ImageIcon size={18} />
                             </button>
-                            <button className="btn-icon" onClick={(e) => handleExport(p, e)} title="팀원에게 배정하기 위해 현장 데이터 파일을 생성하여 다운로드합니다.">
-                                <Download size={18} />
+                            <button className="btn-icon" onClick={(e) => handleExport(p, e)} title="팀원에게 배정하기 위해 현장 데이터 파일을 생성하여 내보냅니다.">
+                                <Upload size={18} />
                             </button>
                             <button className="btn-icon" onClick={(e) => handleEdit(p, e)} title="현장 수정">
                                 <Edit2 size={18} />
