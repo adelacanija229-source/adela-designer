@@ -1,5 +1,5 @@
 {
-  "version": "v1.31",
+  "version": "v1.32",
   "url": "https://adelacanija229-source.github.io/adela-designer/",
-  "notes": "출력 범위 다중 선택(체크박스) 기능 추가, 제안서 출력 누락 동기화 오류 수정 (v1.31)"
+  "notes": "팀원 현장 배정을 위한 JSON 파일 공유 시스템 고도화 (제안서 포함, UI 개선)"
 }

@@ -110,14 +110,16 @@ export const offlineStore = {
         if (!project) return null;
 
         const data = {
-            version: '1.0',
+            version: '1.1',
             exportedAt: new Date().toISOString(),
+            assignmentDate: new Date().toLocaleDateString('ko-KR'),
             project,
             meetingLogs: await this.getByIndex(STORES.MEETING_LOGS, 'projectId', projectId),
             estimates: await this.getByIndex(STORES.ESTIMATES, 'projectId', projectId),
             furniture: await this.getByIndex(STORES.FURNITURE, 'projectId', projectId),
             designerMemos: await this.getByIndex(STORES.DESIGNER_MEMOS, 'projectId', projectId),
-            constructionSpecs: await this.getByIndex(STORES.CONSTRUCTION_SPECS, 'projectId', projectId)
+            constructionSpecs: await this.getByIndex(STORES.CONSTRUCTION_SPECS, 'projectId', projectId),
+            proposals: await this.getByIndex(STORES.PROPOSALS, 'projectId', projectId)
         };
         return data;
     },
@@ -125,19 +127,29 @@ export const offlineStore = {
     async importProject(data) {
         if (!data || !data.project || !data.project.id) throw new Error('올바르지 않은 프로젝트 파일입니다.');
         
-        const { project, meetingLogs, estimates, furniture, designerMemos, constructionSpecs } = data;
+        const { project, meetingLogs, estimates, furniture, designerMemos, constructionSpecs, proposals } = data;
         const db = await initDB();
 
         // Save project main record
         await db.put(STORES.PROJECTS, project);
         
         // Save related records
-        for (const item of (meetingLogs || [])) await db.put(STORES.MEETING_LOGS, item);
-        for (const item of (estimates || [])) await db.put(STORES.ESTIMATES, item);
-        for (const item of (furniture || [])) await db.put(STORES.FURNITURE, item);
-        for (const item of (designerMemos || [])) await db.put(STORES.DESIGNER_MEMOS, item);
-        for (const item of (constructionSpecs || [])) await db.put(STORES.CONSTRUCTION_SPECS, item);
+        const results = {
+            logs: 0,
+            estimates: 0,
+            furniture: 0,
+            memos: 0,
+            specs: 0,
+            proposals: 0
+        };
+
+        for (const item of (meetingLogs || [])) { await db.put(STORES.MEETING_LOGS, item); results.logs++; }
+        for (const item of (estimates || [])) { await db.put(STORES.ESTIMATES, item); results.estimates++; }
+        for (const item of (furniture || [])) { await db.put(STORES.FURNITURE, item); results.furniture++; }
+        for (const item of (designerMemos || [])) { await db.put(STORES.DESIGNER_MEMOS, item); results.memos++; }
+        for (const item of (constructionSpecs || [])) { await db.put(STORES.CONSTRUCTION_SPECS, item); results.specs++; }
+        for (const item of (proposals || [])) { await db.put(STORES.PROPOSALS, item); results.proposals++; }
         
-        return project.id;
+        return { projectId: project.id, itemName: project.name, ...results };
     }
 };

@@ -37,15 +37,17 @@ const ProjectRegistration = ({ projects, onSaved, onSelect, activeProjectId }) =
         reader.onload = async (event) => {
             try {
                 const data = JSON.parse(event.target.result);
-                await offlineStore.importProject(data);
-                alert('프로젝트를 성공적으로 가져왔습니다.');
+                const res = await offlineStore.importProject(data);
+                
+                alert(`[${res.itemName}] 현장 배정 완료!\n\n포함된 데이터:\n- 회의록: ${res.logs}개\n- 견격/변경: ${res.estimates}개\n- 제안서: ${res.proposals}개\n- 가구/시방서 등 포함됨`);
+                
                 onSaved();
+                if (res.projectId) onSelect(res.projectId);
             } catch (err) {
                 console.error(err);
                 alert('프로젝트를 가져오는 데 실패했습니다: 올바르지 않은 파일입니다.');
             }
         };
-        reader.readAsText(file);
         reader.readAsText(file);
         e.target.value = '';
     };
@@ -191,8 +193,8 @@ const ProjectRegistration = ({ projects, onSaved, onSelect, activeProjectId }) =
                         accept="image/*" 
                         onChange={handleBgFileChange} 
                     />
-                    <button className="btn btn-outline" onClick={handleImportClick} title="다른 사용자가 저장한 프로젝트 파일을 불러옵니다.">
-                        <Download size={18} /> 현장 데이터 가져오기
+                    <button className="btn btn-outline" onClick={handleImportClick} title="관리자로부터 배정받은 현장 파일(.json)을 불러와 등록합니다.">
+                        <Upload size={18} /> 배정받은 현장 등록 (.json)
                     </button>
                     <button className="btn btn-primary" onClick={handleStartCreate}>
                         <Plus size={18} /> 새 현장 등록
@@ -422,8 +424,8 @@ const ProjectRegistration = ({ projects, onSaved, onSelect, activeProjectId }) =
                             <button className="btn-icon" onClick={(e) => handleBgUploadClick(p.id, e)} title="현장 배경 이미지 설정">
                                 <ImageIcon size={18} />
                             </button>
-                            <button className="btn-icon" onClick={(e) => handleExport(p, e)} title="팀원에게 공유하기 위해 현장 데이터를 다운로드 합니다.">
-                                <Upload size={18} />
+                            <button className="btn-icon" onClick={(e) => handleExport(p, e)} title="팀원에게 배정하기 위해 현장 데이터 파일을 생성하여 다운로드합니다.">
+                                <Download size={18} />
                             </button>
                             <button className="btn-icon" onClick={(e) => handleEdit(p, e)} title="현장 수정">
                                 <Edit2 size={18} />
