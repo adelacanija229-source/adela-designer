@@ -424,7 +424,7 @@ const ProjectRegistration = ({ projects, onSaved, onSelect, activeProjectId }) =
                             <button className="btn-icon" onClick={(e) => handleBgUploadClick(p.id, e)} title="현장 배경 이미지 설정">
                                 <ImageIcon size={18} />
                             </button>
-                            <button className="btn-icon" onClick={(e) => handleExport(p, e)} title="팀원에게 배정하기 위해 현장 데이터 파일을 생성하여 내보냅니다.">
+                            <button className="btn-icon" onClick={(e) => handleExport(p, e)} title="현장 데이터 파일을 생성하여 내보냅니다.">
                                 <Upload size={18} />
                             </button>
                             <button className="btn-icon" onClick={(e) => handleEdit(p, e)} title="현장 수정">
